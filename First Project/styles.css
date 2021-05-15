@@ -1,0 +1,74 @@
+body {
+    background-color: rgb(50, 50, 50);
+    color: white;
+    margin: 0;
+    padding: 0;
+    font-family: Helvetica Neue, Helvetica;
+}
+header {
+    background-color: gray;
+    background-image: url("https://i.ibb.co/KXFphMg/1.png");
+    background-repeat: no-repeat;
+    background-size: 130%;
+    background-position: center;
+    padding: 20px;
+    text-align: center;
+}
+.features {
+    background-color: white;
+    color: gray;
+    padding: 1%;
+    display: flex;
+    flex-direction: row;
+}
+
+.features div {
+    margin: auto;
+}
+
+.features figure {
+    width: 25vw;
+    text-align: center;
+}
+
+.features figure img {
+    width: 80%;
+    border-radius: 50%;
+}
+
+footer {
+    background-color: black;
+    padding: 10px 20px;
+    text-align: center;
+}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+li {
+    display: inline-block;
+    padding: 1%;
+    margin: auto;
+}
+nav ul li a{
+    text-decoration: none;
+    color: white;
+}
+.logo {
+    background-image: url("https://cdn0.iconfinder.com/data/icons/pet-grooming-hazel-vol-1/256/Colored-hair-extension-512.png");
+    background-size: 100%;
+    background-repeat: no-repeat;
+    display: inline-block;
+    padding: 6%;
+    position: relative;
+    top: 1.5vw;
+    text-indent: -999999px;
+
+}
+
+@media screen and (max-width: 500px){
+    .features {
+        flex-direction: column;
+    }
+}

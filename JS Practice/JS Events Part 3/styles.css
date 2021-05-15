@@ -1,0 +1,17 @@
+body {
+    color: rgb(82, 82, 82);
+    font-family: helvetica;
+    padding: 0 20%;
+}
+
+li input {
+    display: none;
+}
+
+li.edit span {
+    display: none;
+}
+
+li.edit input {
+    display: initial;
+}

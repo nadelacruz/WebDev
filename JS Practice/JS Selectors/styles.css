@@ -1,0 +1,9 @@
+body {
+    color: rgb(109, 109, 109);
+    font-family: Helvetica, sans-serif, Arial;
+    margin: 0px 50px;
+}
+
+.crossed {
+    text-decoration: line-through;
+}
