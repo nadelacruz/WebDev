@@ -1,0 +1,19 @@
+Hello hehe JavaScript related question,
+
+if mayda ako async function
+
+for example,
+
+async function makeResult(items) {
+    ...
+    return newArr;
+}
+
+implicit ba na it iya return type as a resolved promise?
+
+what I mean is if same la ba it 
+
+return newArr; ha
+return Promise.resolve(newArr);
+
+or may difference nira?
