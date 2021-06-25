@@ -5,33 +5,36 @@ import SearchCountries from "./components/SearchCountries";
 
 const App = () => {
   const [countries, setCountries] = useState([]);
+  const [filteredCountries, setFilteredCountries] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const convertWhiteSpace = (text) => text.split(" ").join("%20");
-  const handleSearchTextChange = (event) => setSearchText(event.target.value);
+  const handleSearchTextChange = (event) => {
+    setSearchText(event.target.value);
+    setFilteredCountries(
+      countries.filter((country) =>
+        country.name.toLowerCase().includes(searchText.toLowerCase())
+      )
+    );
+  };
 
   useEffect(() => {
-    axios
-      .get(
-        `https://restcountries.eu/rest/v2/name/${convertWhiteSpace(searchText)}`
-      )
-      .then((response) => {
-        setCountries(response.data);
-      })
-      .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.log(error.message);
-      });
-  }, [searchText]);
+    axios.get("https://restcountries.eu/rest/v2/all").then((response) => {
+      setCountries(response.data);
+      setIsLoading(false);
+    });
+  }, []);
 
-  return (
+  return !isLoading ? (
     <div>
       <SearchCountries
         searchText={searchText}
         handleSearchTextChange={handleSearchTextChange}
       />
-      <CountryList countries={countries} />
+      <CountryList countries={filteredCountries} />
     </div>
+  ) : (
+    <div>Fetching data from API...</div>
   );
 };
 

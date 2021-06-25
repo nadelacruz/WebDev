@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
+import Notification from "./components/Notification";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import personsService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,10 +12,13 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [searchText, setSearchText] = useState("");
 
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [isErrorMessage, setIsErrorMessage] = useState(false);
+
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
-    });
+    personsService
+      .getAll()
+      .then((initialPersonList) => setPersons(initialPersonList));
   }, []);
 
   const handleNameTextboxChange = (event) => {
@@ -29,23 +33,70 @@ const App = () => {
     setSearchText(event.target.value);
   };
 
+  const showNotificationMessage = (message, isError) => {
+    setNotificationMessage(message);
+    setIsErrorMessage(isError);
+    setTimeout(() => setNotificationMessage(null), 5000);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const checkIfNameIsFound = persons.find(
       (person) => person.name === newName
     );
     if (checkIfNameIsFound === undefined) {
-      setPersons(persons.concat({ name: newName, number: newNumber }));
-    } else {
+      const newPerson = {
+        name: newName,
+        number: newNumber,
+      };
+      personsService
+        .create(newPerson)
+        .then((returnedPerson) => setPersons(persons.concat(returnedPerson)));
+      showNotificationMessage(`Added ${newPerson.name}`, false);
+    } else if (
       // eslint-disable-next-line no-alert
-      alert(`${checkIfNameIsFound.name} is already added to the phonebook`);
+      window.confirm(
+        `${checkIfNameIsFound.name} is already added to the phonebook, replace the old number with a new one?`
+      )
+    ) {
+      const changedPerson = { ...checkIfNameIsFound, number: newNumber };
+      personsService
+        .update(changedPerson.id, changedPerson)
+        .then((returnedPerson) => {
+          setPersons(
+            persons.map((person) =>
+              person.id !== changedPerson.id ? person : returnedPerson
+            )
+          );
+        });
+      showNotificationMessage(`Updated ${changedPerson.name}'s number`, false);
     }
     setNewName("");
     setNewNumber("");
   };
+
+  const handleDelete = (person) => {
+    // eslint-disable-next-line no-alert
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personsService.deleteElementWithId(person.id).catch(() => {
+        showNotificationMessage(
+          `Information of ${person.name} has already been removed from server`,
+          true
+        );
+      });
+      setPersons(
+        persons.filter((currentPerson) => person.name !== currentPerson.name)
+      );
+    }
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification
+        message={notificationMessage}
+        isErrorMessage={isErrorMessage}
+      />
       <Filter
         searchText={searchText}
         handleSearchTextboxChange={handleSearchTextboxChange}
@@ -59,7 +110,11 @@ const App = () => {
         handleNumberTextboxChange={handleNumberTextboxChange}
       />
       <h3>Numbers</h3>
-      <Persons actualPersons={persons} actualSearchText={searchText} />
+      <Persons
+        actualPersons={persons}
+        actualSearchText={searchText}
+        handleDelete={handleDelete}
+      />
     </div>
   );
 };
